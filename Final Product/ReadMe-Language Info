@@ -1,0 +1,56 @@
+First I want to say that any help identifying bugs and problems is very helpful, since I can’t recreate every possible instance for a bug in tests by myself.
+
+Directions for Executable file use-
+1) Open the FP.jar file
+2) Type code, following the syntax from this document, in the editor.
+3) Click on the Code tab, then Click Run.
+4) Use the directory, or browse for a save location and save the file.
+5) The Output text file should be created in the same directory as the executable. Open it and check the results.
+
+The syntax of my language is as follows:
+
+Variable types- integer, decimal, binary.
+
+Initialisation: 
+	
+• integer a is 5
+• decimal b is 4.2
+• binary bool is true
+
+Assignment: 
+
+• a is a + 1
+• b is b * a
+• bool is b < a
+
+Conditionals: 
+Comparators- ( equals / not equals / <  / > / <= / >= )
+• If a equals 4
+  print( a )
+  end if
+
+Loop:
+
+• while a < 4
+  print( a )
+  a is a + 1
+  end loop
+• for 5 times
+  print ( 5 * 5 )
+  end loop 
+• from a is 5 to 10
+  print(a)
+  end loop
+
+Print:
+
+• print( a )
+• print( 5 * 7 )
+
+In the works (In this order):
+
+• Else/else if conditionals
+• Implementation of Strings
+• Error Handling and description
+• Order of operations in expressions
+• Implementations of Lists
