@@ -1,3 +1,0 @@
-integer num is 5
-print( num )
-end
