@@ -47,6 +47,9 @@ Print:
 • print( a )
 • print( 5 * 7 )
 
+Recent Features:
+• Nested Loops/Conditionals
+
 In the works (In this order):
 
 • Else/else if conditionals
