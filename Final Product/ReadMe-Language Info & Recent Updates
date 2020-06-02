@@ -9,19 +9,21 @@ Directions for Executable file use-
 
 The syntax of my language is as follows:
 
-Variable types- integer, decimal, binary.
+Variable types- integer, decimal, binary, Characters.
 
 Initialisation: 
 	
 • integer a is 5
 • decimal b is 4.2
 • binary bool is true
+• Characters name is "Vivan"
 
 Assignment: 
 
 • a is a + 1
 • b is b * a
 • bool is b < a
+• name is name + " Shah"
 
 Conditionals: 
 Comparators- ( equals / not equals / <  / > / <= / >= )
@@ -46,6 +48,7 @@ Print:
 
 • print( a )
 • print( 5 * 7 )
+• print( "Hello World!" )
 
 Recent Features:
 • Nested Loops/Conditionals
