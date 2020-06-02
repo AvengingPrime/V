@@ -68,7 +68,7 @@ public class VCompiler
 		Pattern initialisation = Pattern.compile("(integer|decimal|Characters|binary|character) [a-zA-Z\\d]+ is .+");
 		Pattern assignment = Pattern.compile("[a-zA-Z\\d]+ is .+");
 		Pattern conditional = Pattern.compile("if [\\w\\d]+ (equals|<|<=|>=|does not equals) [\\w\\d]+");
-		Pattern forLoop = Pattern.compile("for \\d+ times");
+		Pattern forLoop = Pattern.compile("for [a-zA-Z\\d]+ times");
 		Pattern fromLoop = Pattern.compile("from \\w+ is \\d+ to \\d+");
 		Pattern whileLoop = Pattern.compile("while \\w+ (is|>|<|<=|>=) [\"\\w\\d\"]+");
 		Pattern print = Pattern.compile("print\\s?(\\s?.*)");
@@ -123,15 +123,16 @@ public class VCompiler
 			while(!next.equals("end if") || (next.equals("end if") && ifCount != endCount))
 			{
 				next = codeScanner.nextLine();
-				code2 += next + "\n";
 				if(next.contains("if"))
 				{
 					ifCount++;
-				}
-				if(next.contains("end if"))
+				}if(next.contains("end loop"))
 				{
 					endCount++;
+					if(endCount == ifCount)
+						break;
 				}
+				code2 += next + "\n";
 			}
 			
 			conditional(code2, value);
@@ -148,15 +149,16 @@ public class VCompiler
 			while(!next.equals("end loop") || (next.equals("end loop") && loopCount != endCount))
 			{
 				next = codeScanner.nextLine();
-				code2 += next + "\n";
 				if(next.contains("for") || next.contains("from") || next.contains("while"))
 				{
 					loopCount++;
-				}
-				if(next.contains("end loop"))
+				}if(next.contains("end loop"))
 				{
 					endCount++;
+					if(endCount == loopCount)
+						break;
 				}
+				code2 += next + "\n";
 			}
 			
 			forLoop(code2, i);
@@ -178,7 +180,6 @@ public class VCompiler
 			while(!next.equals("end loop") || (next.equals("end loop") && loopCount != endCount))
 			{
 				next = codeScanner.nextLine();
-				code2 += next + "\n";
 				if(next.contains("for") || next.contains("from") || next.contains("while"))
 				{
 					loopCount++;
@@ -186,7 +187,10 @@ public class VCompiler
 				if(next.contains("end loop"))
 				{
 					endCount++;
+					if(endCount == loopCount)
+						break;
 				}
+				code2 += next + "\n";
 			}
 			
 			fromLoop(code2, to, name, from);
@@ -203,19 +207,20 @@ public class VCompiler
 			while(!next.equals("end loop") || (next.equals("end loop") && loopCount != endCount))
 			{
 				next = codeScanner.nextLine();
-				code2 += next + "\n";
 				if(next.contains("for") || next.contains("from") || next.contains("while"))
 				{
-					System.out.println("loopCount");
 					loopCount++;
 				}
 				if(next.contains("end loop"))
 				{
 					endCount++;
+					if(endCount == loopCount)
+						break;
 				}
+				code2 += next + "\n";
 			}
 			
-			System.out.println(code2);
+//			System.out.println(code2);
 			
 			whileLoop(code2, value);
 		}
@@ -226,7 +231,7 @@ public class VCompiler
 			String str = line.nextLine().replace(" )", "");
 //			System.out.println(str);
 			write.print(getValue(str) + "\n");
-			System.out.println(getValue(str) + "\n");
+//			System.out.println(getValue(str) + "\n");
 		}
 	}
 	
