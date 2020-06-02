@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -33,9 +34,9 @@ public class VCompiler
 		
 		while(console.hasNextLine())
 		{
-			code += console.nextLine() + "\n";
-			
+			code += console.nextLine() + "\n";	
 		}
+		
 		interpret(code);
 		
 		write.close();
@@ -101,7 +102,6 @@ public class VCompiler
 		else if(assignment.matches(assignment.pattern(), code))
 		{
 //			System.out.println("assignment");
-//			Scanner console1 = new Scanner(code);
 //			String type = console.next();
 			String name = line.next();
 			line.next(); String value = line.nextLine();
@@ -227,10 +227,9 @@ public class VCompiler
 		else if(print.matches(print.pattern(), code))
 		{
 //			System.out.println("print");
-			line.next();
-			String str = line.nextLine().replace(" )", "");
+			String str = line.nextLine().replace("print", "").replace("(", "").replace(")", "");
 //			System.out.println(str);
-			write.print(getValue(str) + "\n");
+			write.print(getValue(str).replaceAll("\"", "") + "\n");
 //			System.out.println(getValue(str) + "\n");
 		}
 	}
@@ -246,15 +245,6 @@ public class VCompiler
 		{
 			if(vars.containsKey(str))
 			{
-//				if(vars.get(str).javaType.contentEquals("String"))
-//				{
-//					s += "\"" + vars.get(str).val + "\"" + " ";
-//				}
-//				else if(vars.get(str).javaType.contentEquals("Character"))
-//				{
-//					s += "\'" + vars.get(str).val + "\'" + " ";
-//				}
-//				else 
 				if(vars.get(str).javaType.contentEquals("Double"))
 				{
 					s += Double.parseDouble(vars.get(str).val) + " ";
@@ -264,11 +254,6 @@ public class VCompiler
 					s += vars.get(str).val + " ";
 				}
 			}
-			else if(str.contains("\""))
-			{
-				str.replaceAll("[\s\"]", "");
-				s += str + " ";
-			}
 			else
 			{
 				s += str + " ";
@@ -277,13 +262,29 @@ public class VCompiler
 		
 		LinkedList<String> q = new LinkedList<>();
 		arr = s.split(" ");
-		for(String str : arr)
+		for(int i = 0; i < arr.length; i++)
 		{
+			String str = arr[i];
+			String temp = str;
+			
 			if(str.equals("") || str.equals(" ") || str.equals("\n"))
 			{
 				continue;
 			}
-			String str2 = str.replaceAll("[\\s\n]", "");
+			if(str.contains("\""))
+			{
+				temp += " ";
+				if(str.replaceAll("\"", "").length() == str.length() - 1)
+				{
+					do
+					{
+						str = arr[++i];
+						temp += str + " ";
+					} while(!str.contains("\""));
+				}
+				temp = temp.substring(0, temp.length() - 1);
+			}
+			String str2 = temp.replaceAll("[\n]", "");
 			q.add(str2);
 		}
 		
@@ -355,14 +356,13 @@ public class VCompiler
 			return(doub.matches(doub.pattern(), val) || doub.matches(doub.pattern(), operand))? Double.parseDouble(val) >= Double.parseDouble(operand) :  Integer.parseInt(val) >= Integer.parseInt(operand);
 		}
 		
-		
 		return false;
 	}
 	
 	public String performOperation(String val, String operation, String operand)
 	{
 //		System.out.println(val + " " + operation + " " + operand);
-		Pattern string = Pattern.compile("[^(true|false)\\.\\d]+");
+		Pattern string = Pattern.compile("\".*\"");
 		Pattern character = Pattern.compile("\'.\'");
 		Pattern integer = Pattern.compile("\\d+");
 		Pattern doub = Pattern.compile("\\d+\\.\\d*");
@@ -374,17 +374,17 @@ public class VCompiler
 			{
 				return val + operand;
 			}
-			else if(operation.equals("*"))
-			{
-				int num = Integer.parseInt(operand);
-				
-				String str = "";
-				
-				for(int i = 0; i < num; i++)
-				{
-					str += val;
-				}
-			}
+//			else if(operation.equals("*"))
+//			{
+//				int num = Integer.parseInt(operand);
+//				
+//				String str = "";
+//				
+//				for(int i = 0; i < num; i++)
+//				{
+//					str += val;
+//				}
+//			}
 		}
 		else if(string.matches(doub.pattern(), val) || string.matches(doub.pattern(), operand))
 		{
@@ -495,7 +495,5 @@ public class VCompiler
 	public static void main(String[] args) 
 	{
 		new VCompiler(new File("Hello"));
-//		new V();
-//		System.out.println(Pattern.matches("\".*\"", "5"));
 	}
 }
