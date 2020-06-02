@@ -20,7 +20,6 @@ public class VCompiler
 		write = null;
 		try
 		{
-//			file = new File("Hello");
 			this.console = new Scanner(file);
 			this.write = new PrintWriter(new File(file.getName() +  " Output.txt"));
 		} catch (FileNotFoundException e1)
@@ -29,22 +28,31 @@ public class VCompiler
 		}
 		vars = new HashMap<>();
 		System.out.println("Welcome to V, the language of the future");
-		interpret();
+		
+		String code = "";
+		
+		while(console.hasNextLine())
+		{
+			code += console.nextLine() + "\n";
+			
+		}
+		interpret(code);
 		
 		write.close();
 	}	
 	
-	public void interpret()
+	public void interpret(String code)
 	{
-		while(console.hasNextLine())
+		Scanner codeScanner = new Scanner(code);
+		while(codeScanner.hasNextLine())
 		{
-			String line = console.nextLine();
+			String line = codeScanner.nextLine();
 			try
 			{
 				if(line.equals("end"))
 					break;
 				
-				determine(line);
+				determine(line, codeScanner);
 			}
 			catch(Exception e)
 			{
@@ -54,9 +62,9 @@ public class VCompiler
 		}
 	}
 	
-	private void determine(String code)
+	private void determine(String code, Scanner codeScanner)
 	{
-		boolean b = true;
+//		System.out.println("determine");
 		Pattern initialisation = Pattern.compile("(integer|decimal|Characters|binary|character) [a-zA-Z\\d]+ is .+");
 		Pattern assignment = Pattern.compile("[a-zA-Z\\d]+ is .+");
 		Pattern conditional = Pattern.compile("if [\\w\\d]+ (equals|<|<=|>=|does not equals) [\\w\\d]+");
@@ -69,6 +77,9 @@ public class VCompiler
 		Scanner line = new Scanner(code);
 		
 //		System.out.println(code);
+		
+//		if(code.contains("end"))
+//			return;
 		
 		if(initialisation.matches(initialisation.pattern(), code))
 		{
@@ -101,35 +112,53 @@ public class VCompiler
 		}
 		else if(conditional.matches(conditional.pattern(), code))
 		{
+//			System.out.println(code);
 			line.next();
 			String value = line.nextLine();
-			String next = console.nextLine();
+			String next = "";
+//			System.out.println(next);
 			String code2 = "";
-			while(!next.equals("end if"))
+			int ifCount = 1;
+			int endCount = 0;
+			while(!next.equals("end if") || (next.equals("end if") && ifCount != endCount))
 			{
-//				System.out.println(next);
+				next = codeScanner.nextLine();
 				code2 += next + "\n";
-				next = console.nextLine();
+				if(next.contains("if"))
+				{
+					ifCount++;
+				}
+				if(next.contains("end if"))
+				{
+					endCount++;
+				}
 			}
-			if(getValue(value).equals("true"))
-			{
-				determine(code2);
-			}
+			
+			conditional(code2, value);
 		}
 		else if(forLoop.matches(forLoop.pattern(), code))
 		{
-			String n = code.split(" ")[1];
-			int i = Integer.parseInt(n);
-			String next = console.nextLine();
+			String value = code.replaceAll("for ", "").replaceAll(" times", "");
+			int i = Integer.parseInt(getValue(value));
+			String next = "";
 			String code2 = "";
-			while(!next.equals("end loop"))
+			int loopCount = 1;
+			int endCount = 0;
+			
+			while(!next.equals("end loop") || (next.equals("end loop") && loopCount != endCount))
 			{
-//				System.out.println(next);
+				next = codeScanner.nextLine();
 				code2 += next + "\n";
-				next = console.nextLine();
+				if(next.contains("for") || next.contains("from") || next.contains("while"))
+				{
+					loopCount++;
+				}
+				if(next.contains("end loop"))
+				{
+					endCount++;
+				}
 			}
 			
-//			System.out.println(code2);
 			forLoop(code2, i);
 		}
 		else if(fromLoop.matches(fromLoop.pattern(), code))
@@ -141,43 +170,54 @@ public class VCompiler
 			line.next();
 			int to = Integer.parseInt(line.next());
 			vars.put(name, new Variable("integer", name, from + ""));
-			String next = console.nextLine();
+			String next = "";
 			String code2 = "";
-			while(!next.equals("end loop"))
+			int loopCount = 1;
+			int endCount = 0;
+			
+			while(!next.equals("end loop") || (next.equals("end loop") && loopCount != endCount))
 			{
-//				System.out.println(next);
+				next = codeScanner.nextLine();
 				code2 += next + "\n";
-				next = console.nextLine();
+				if(next.contains("for") || next.contains("from") || next.contains("while"))
+				{
+					loopCount++;
+				}
+				if(next.contains("end loop"))
+				{
+					endCount++;
+				}
 			}
-//			System.out.println(code2);
-//			System.out.println();
+			
 			fromLoop(code2, to, name, from);
 		}
 		else if(whileLoop.matches(whileLoop.pattern(), code))
 		{
-//			System.out.println(code);
 			line.next();
 			String value = line.nextLine();
-//			System.out.println(value);
-			String next = console.nextLine();
+			String next = "";
 			String code2 = "";
-			ArrayList<String> code2s = new ArrayList<>();
-			while(!next.equals("end loop"))
+			int loopCount = 1;
+			int endCount = 0;
+			
+			while(!next.equals("end loop") || (next.equals("end loop") && loopCount != endCount))
 			{
-//				System.out.println(next);
+				next = codeScanner.nextLine();
 				code2 += next + "\n";
-				code2s.add(next);
-				next = console.nextLine();
+				if(next.contains("for") || next.contains("from") || next.contains("while"))
+				{
+					System.out.println("loopCount");
+					loopCount++;
+				}
+				if(next.contains("end loop"))
+				{
+					endCount++;
+				}
 			}
-//			System.out.println(code2);
-			while(getValue(value).equals("true"))
-			{
-//				System.out.println("while");
-//				System.out.println(vars.get("a").val);
-				
-				for(String l : code2s)
-					determine(l);
-			}
+			
+			System.out.println(code2);
+			
+			whileLoop(code2, value);
 		}
 		else if(print.matches(print.pattern(), code))
 		{
@@ -186,12 +226,8 @@ public class VCompiler
 			String str = line.nextLine().replace(" )", "");
 //			System.out.println(str);
 			write.print(getValue(str) + "\n");
-//			System.out.println(getValue(str) + "\n");
+			System.out.println(getValue(str) + "\n");
 		}
-//		else if(operations.matches(operations.pattern(), code))
-//		{
-//			
-//		}
 	}
 	
 	public String getValue(String code)
@@ -275,31 +311,19 @@ public class VCompiler
 			{
 				q.addFirst("" + performBoolean(val, operation, operand));
 			}
-			
-//			System.out.println(q);
 		}
-//		if()
-//		{
-//			
-//		}
 		
 		return q.pollFirst();
 	}
 	
 	public Boolean performBoolean(String val, String operation, String operand)
 	{
-//		System.out.println("boolean");
+//		System.out.println(val + " " + operation + " " + operand);
 		Pattern string = Pattern.compile("\".*\"");
 		Pattern character = Pattern.compile("\'.\'");
 		Pattern integer = Pattern.compile("\\d+");
 		Pattern doub = Pattern.compile("\\d+\\.\\d*");
 		Pattern bool = Pattern.compile("(true|false)");
-		
-//		String temp = val;
-//		val = operand;
-//		operand = temp;
-		
-//		System.out.println(val + " " + operation + " " + operand);
 		
 		if(operation.equals("equals"))
 		{
@@ -315,7 +339,6 @@ public class VCompiler
 		}
 		else if(operation.equals(">"))
 		{
-//			System.out.println(">");
 			return(doub.matches(doub.pattern(), val) || doub.matches(doub.pattern(), operand))? Double.parseDouble(val) > Double.parseDouble(operand) :  Integer.parseInt(val) > Integer.parseInt(operand);
 		}
 		else if(operation.equals("<="))
@@ -339,10 +362,6 @@ public class VCompiler
 		Pattern integer = Pattern.compile("\\d+");
 		Pattern doub = Pattern.compile("\\d+\\.\\d*");
 		Pattern bool = Pattern.compile("(true|false)");
-		
-//		String temp = val;
-//		val = operand;
-//		operand = temp;
 		
 		if(Pattern.matches(string.pattern(), val) || Pattern.matches(string.pattern(), operand))
 		{
@@ -419,18 +438,19 @@ public class VCompiler
 		return null;
 	}
 	
+	public void conditional(String code, String booleanExpression)
+	{
+		if(getValue(booleanExpression).equals("true"))
+		{
+			interpret(code);
+		}
+	}
+	
 	public void forLoop(String code, int times)
 	{
-		String[] s = code.split("\n");
 		for(int i = 0; i < times; i++)
 		{
-			for(String str : s)
-			{
-				if(str.equals(" ") || str.equals(""))
-					continue;
-//				System.out.println(str);
-				determine(str);
-			}
+			interpret(code);
 		}
 	}
 	
@@ -438,47 +458,29 @@ public class VCompiler
 	{
 		if(to < from)
 		{
-//			System.out.println("if");
-			String[] s = code.split("\n");
 			while(Integer.parseInt(vars.get(var).val) > to)
 			{
-				for(String str : s)
-				{
-					if(str.equals(" ") || str.equals(""))
-						continue;
-//					System.out.println(str);
-					determine(str);
-				}
+				interpret(code);
+				vars.get(var).val = Integer.parseInt(vars.get(var).val) - 1 + "";
 			}
-			
-			vars.get(var).val = Integer.parseInt(vars.get(var).val) - 1 + "";
 		}
 		else if(from < to)
 		{
-//			System.out.println("else if");
-			String[] s = code.split("\n");
-//			System.out.println(Arrays.toString(s));
 			while(Integer.parseInt(vars.get(var).val) < to)
 			{
-				for(String str : s)
-				{
-					if(str.equals(" ") || str.equals(""))
-						continue;
-//					System.out.println(str);
-					determine(str);	
-				}
-				
-//				System.out.println(vars.get(var).val);
+				interpret(code);
 				vars.get(var).val = Integer.parseInt(vars.get(var).val) + 1 + "";
 			}
 		}
 	}
 	
-//	public void initialise(String code)
-//	{
-//		String[] strs = code.split(" is ");
-//		
-//	}
+	public void whileLoop(String code, String expression)
+	{
+		while(getValue(expression).equals("true"))
+		{	
+			interpret(code);
+		}
+	}
 	
 	public boolean end(String code)
 	{
@@ -487,7 +489,7 @@ public class VCompiler
 	
 	public static void main(String[] args) 
 	{
-		new VCompiler(null);
+		new VCompiler(new File("Hello"));
 //		new V();
 //		System.out.println(Pattern.matches("\".*\"", "5"));
 	}
