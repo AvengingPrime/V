@@ -16,7 +16,6 @@ public class V
 	{
 		while(true)
 		{
-//			System.out.println("WORKS");
 			if(gui.run)
 			{
 				System.out.println("WORKS");
@@ -29,7 +28,6 @@ public class V
 	{
 		System.out.println("Working");
 		compiler = new VCompiler(file);
-//		compiler.interpret();
 	}
 	
 	public static void main(String[] args)
