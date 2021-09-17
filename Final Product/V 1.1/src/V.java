@@ -36,6 +36,4 @@ public class V
 	{
 		V v = new V();
 	}
-	
-	
 }

@@ -1,5 +1,11 @@
 import java.util.HashMap;
 
+/*
+*
+*
+*
+*
+*/
 public class Variable
 {
 	Type type;
